@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CharCard from "./components/card/char_card";
 import InputSearch from "./components/search/input_search";
 import rick_morty_brand from "./assets/Rick_and_Morty.svg";
+import axios from "axios";
 
 export default function App () {
 
@@ -9,20 +10,16 @@ export default function App () {
 
     const [characters, setCharacters] = useState([]);
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const res = await fetch(`https://rickandmortyapi.com/api/character/?name=${ searchChar }`);
-                const data = await res.json();
-                setCharacters(data.results);
-                console.log(data.results);
-            } catch (error) {
-                console.error(error);
-            }
+    const fetchData = async () => {
+        try {
+            const { data } = await axios.get(`https://rickandmortyapi.com/api/character/?name=${ searchChar }`);
+            setCharacters(data.results);
+        } catch (e) {
+            console.error(e);
         }
+    };
 
-        fetchData();
-    }, [searchChar]);
+    useEffect(() => { fetchData(); }, [searchChar]);
 
     const filterdChars = characters.filter(filChar => {
         return filChar.name.toLowerCase().includes(searchChar.toLowerCase());
